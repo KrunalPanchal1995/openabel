@@ -1,0 +1,88 @@
+[
+  {
+    "title": "Fix typos and unclear sentences in the Session 1 notes",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "documentation"
+    ],
+    "body": "## Problem\nThe Session 1 notes may contain typos or sentences that a first-year student finds confusing.\n\n## Context\nBeginners judge the whole repo by Session 1.\n\n## Expected outcome\nA clearer `sessions/session-01/README.md` and `lesson.py` comments.\n\n## Relevant files\n`sessions/session-01/README.md`, `sessions/session-01/lesson.py`\n\n## Acceptance criteria\n- [ ] At least three improvements\n- [ ] `python start.py test` still passes\n\n## Difficulty\nbeginner"
+  },
+  {
+    "title": "Add a second shape to the Session 1 app: a glowing cylinder seen from the side",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "feature"
+    ],
+    "body": "## Problem\nThe Session 1 app only shows a ball; a cylinder seen from the side has a different brightness profile (it is flat in the middle).\n\n## Context\nComparing two shapes helps learners see that a pixel records a line integral, not the shape directly.\n\n## Expected outcome\nA shape selector in `sessions/session-01/app.html` (built from `content`) with a correct formula and a readout.\n\n## Relevant files\n`sessions/session-01/lesson.py`, `sessions/session-01/app.html`\n\n## Acceptance criteria\n- [ ] Profile matches a brute-force `ray_sum`\n- [ ] Checkpoint extended and passing\n\n## Difficulty\nbeginner"
+  },
+  {
+    "title": "Add Session 4: choose the smoothing from the photo alone",
+    "labels": [
+      "intermediate",
+      "feature"
+    ],
+    "body": "## Problem\nThe mini-project picks the smoothing strength by comparing with the known truth, which is impossible with a real photo.\n\n## Context\nSee `promo/roadmap.md`, first milestone. Generalised cross-validation and the discrepancy principle are standard methods.\n\n## Expected outcome\n`sessions/session-04/` with README (sections A to F), lesson, checkpoint, exercises and app in the same style as Sessions 1 to 3.\n\n## Relevant files\n`promo/roadmap.md`, `sessions/session-03/lesson.py`\n\n## Acceptance criteria\n- [ ] Checkpoint prints PASS and the roadmap checkpoint is met\n- [ ] Added to the tests\n\n## Difficulty\nintermediate"
+  },
+  {
+    "title": "Add Session 5: find the flame axis",
+    "labels": [
+      "intermediate",
+      "feature"
+    ],
+    "body": "## Problem\nAll sessions assume the flame axis is exactly at the image centre; a one-pixel error already hurts the result.\n\n## Context\nRoadmap milestone 2.\n\n## Expected outcome\nA lesson and app that estimates the axis position from a photo and shows the error with and without the correction.\n\n## Relevant files\n`sessions/session-03/lesson.py`, `promo/roadmap.md`\n\n## Acceptance criteria\n- [ ] Axis found to within 0.3 pixel on the candle photo\n- [ ] Checkpoint added\n\n## Difficulty\nintermediate"
+  },
+  {
+    "title": "Add a Fourier / cosine-series inversion and compare it with onion peeling",
+    "labels": [
+      "advanced",
+      "feature"
+    ],
+    "body": "## Problem\nSession 3 uses one smoothing method (second-difference Tikhonov). Fourier-series methods are a standard alternative.\n\n## Context\nThe number of terms plays the role of the smoothing strength.\n\n## Expected outcome\nA function `fourier_invert(I, terms)` and a figure comparing bias and noise against the Session 3 method on the Gaussian and ring flames.\n\n## Relevant files\n`sessions/session-03/lesson.py`\n\n## Acceptance criteria\n- [ ] Validated on the exact Gaussian pair\n- [ ] Short write-up of when each method is better\n\n## Difficulty\nadvanced"
+  },
+  {
+    "title": "Reproduce the Target: a 3D cut-away rebuilt from one noisy photo",
+    "labels": [
+      "advanced",
+      "feature"
+    ],
+    "body": "## Problem\nThe Target animation shows a clean 3D reconstruction from a noisy photo; there is no public implementation.\n\n## Context\nThe code behind the Target is private on purpose. The roadmap gives the path.\n\n## Expected outcome\nYour own implementation, written from the roadmap, plus an animation like the Target.\n\n## Relevant files\n`promo/roadmap.md`\n\n## Acceptance criteria\n- [ ] RMS error at or below 0.025 of the peak on the 3 percent noise photo\n- [ ] Short write-up of your method\n\n## Difficulty\nadvanced"
+  },
+  {
+    "title": "Translate the Session 1 notes into Hindi",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "documentation"
+    ],
+    "body": "## Problem\nStudents who prefer Hindi cannot read Session 1 comfortably.\n\n## Context\nThis project teaches first- and second-year students across India; translations widen who can join.\n\n## Expected outcome\n`sessions/session-01/README.hi.md` with a faithful Hindi translation of sections A to F, linked from the main README.\n\n## Relevant files\n`sessions/session-01/README.md`\n\n## Acceptance criteria\n- [ ] All sections translated\n- [ ] Equations, code blocks and file names unchanged\n- [ ] Link added to the main README\n\n## Difficulty\nbeginner"
+  },
+  {
+    "title": "Translate the Session 1 notes into Telugu",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "documentation"
+    ],
+    "body": "## Problem\nStudents who prefer Telugu cannot read Session 1 comfortably.\n\n## Context\nThis project teaches first- and second-year students across India; translations widen who can join.\n\n## Expected outcome\n`sessions/session-01/README.te.md` with a faithful Telugu translation of sections A to F, linked from the main README.\n\n## Relevant files\n`sessions/session-01/README.md`\n\n## Acceptance criteria\n- [ ] All sections translated\n- [ ] Equations, code blocks and file names unchanged\n- [ ] Link added to the main README\n\n## Difficulty\nbeginner"
+  },
+  {
+    "title": "Translate the Session 1 notes into Tamil",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "documentation"
+    ],
+    "body": "## Problem\nStudents who prefer Tamil cannot read Session 1 comfortably.\n\n## Context\nThis project teaches first- and second-year students across India; translations widen who can join.\n\n## Expected outcome\n`sessions/session-01/README.ta.md` with a faithful Tamil translation of sections A to F, linked from the main README.\n\n## Relevant files\n`sessions/session-01/README.md`\n\n## Acceptance criteria\n- [ ] All sections translated\n- [ ] Equations, code blocks and file names unchanged\n- [ ] Link added to the main README\n\n## Difficulty\nbeginner"
+  },
+  {
+    "title": "Translate the Session 1 notes into Malayalam",
+    "labels": [
+      "good first issue",
+      "beginner",
+      "documentation"
+    ],
+    "body": "## Problem\nStudents who prefer Malayalam cannot read Session 1 comfortably.\n\n## Context\nThis project teaches first- and second-year students across India; translations widen who can join.\n\n## Expected outcome\n`sessions/session-01/README.ma.md` with a faithful Malayalam translation of sections A to F, linked from the main README.\n\n## Relevant files\n`sessions/session-01/README.md`\n\n## Acceptance criteria\n- [ ] All sections translated\n- [ ] Equations, code blocks and file names unchanged\n- [ ] Link added to the main README\n\n## Difficulty\nbeginner"
+  }
+]

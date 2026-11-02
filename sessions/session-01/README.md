@@ -1,6 +1,6 @@
 # Session 1: A photo adds up the light along every line of sight
 
-[Session 1 — हिन्दी](README.hi.md)
+[Session 1 — हिन्दी](README.hi.md) · [Session 1 — മലയാളം](README.ml.md)
 
 *Level 1 (conceptual interactive model) · about 60 minutes · openabel*
 

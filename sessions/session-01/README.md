@@ -71,7 +71,7 @@ Run the lesson (`python start.py 1`), then open the live app: [Session 1: a glow
 
 **Answer.** The chord is 4.8 cm and the pixel records 9.6 a.u.
 
-**Experiment.** Look at a frosted (opal) light bulb or a ping-pong ball lit from inside in a dark room, photographed from the side with a phone. The middle looks brightest for a solid glow. A real bulb differs from the model because the glass scatters and absorbs light and the camera brightness is not linear; the model is exact only for an ideal transparent glow.
+**Experiment.** Look at a frosted (opal) light bulb or a ping-pong ball lit from inside in a dark room, photographed from the side with a phone. The middle looks brightest for a solid glow. A real bulb differs from the model because the glass scatters and absorbs light and a phone camera's brightness is not proportional to the light it receives; the model is exact only for an ideal transparent glow.
 
 ## F. Assessment and design challenge
 **Question type A: Conceptual.** Why is the middle of a solid glowing ball the brightest pixel, and why can a hollow shell be brighter at its edge than in the middle?
@@ -89,6 +89,7 @@ Compare the path lengths through glowing material for a line through the middle 
 The pixel adds up light along the path, so a longer path through glowing material gives a brighter pixel. In a solid ball the line through the middle is the longest. In a shell the middle line spends most of its length in the empty hole, so only the short walls count; a line that just grazes the hole travels a long way inside the wall, so the brightest line is the one that touches the inner radius.
 
 </details>
+
 **Question type B: Numerical.** A solid ball has R = 2.5 cm and eps0 = 1.2 a.u. per cm. Find the chord and the brightness at y = 1.5 cm, and at y = 0. Check the units.
 
 <details>
@@ -104,6 +105,7 @@ Use chord = 2 sqrt(R^2 - y^2): at y = 1.5, R^2 - y^2 = 6.25 - 2.25 = 4.
 At y = 1.5 cm: chord = 2 * sqrt(4) = 4 cm and I = 1.2 * 4 = 4.8 a.u. At y = 0: chord = 2R = 5 cm and I = 1.2 * 5 = 6.0 a.u. Units: (a.u. per cm) times cm = a.u. Sanity: the off-centre line is shorter so it is dimmer.
 
 </details>
+
 **Question type C: Graph and simulation interpretation.** In the profile of the hollow shell (R = 3 cm, r_in = 2 cm), where is the brightest point and what value does it have? Why is the centre only 2 a.u.?
 
 <details>
@@ -119,6 +121,7 @@ The brightest line touches the inner circle: y = r_in. Evaluate 2 sqrt(R^2 - r_i
 The brightest point is at y = 2 cm with I = 2 sqrt(9 - 4) = 2 sqrt(5) = 4.47 a.u. The centre line has chord 6 cm through the outer ball minus 4 cm through the hole, so 2 cm and I = 2 a.u. The profile therefore has a dip in the middle and two bright shoulders, called limb brightening.
 
 </details>
+
 **Question type D: Design and optimisation challenge.** Design: a glowing shell has outer radius 3 cm. Choose the inner radius so that the centre brightness is at most half of the brightest brightness. Is a hole of radius 1 cm enough? Justify with a calculation.
 
 <details>
@@ -141,8 +144,8 @@ Score yourself with [RUBRIC.md](../../RUBRIC.md). Print the [activity sheet](act
 | Common misconception | What is actually true |
 |---|---|
 | A pixel records the glow at one point of the object. | A pixel records the sum of the glow along the whole line of sight through the object. |
-| A dark centre in the photo means there is no glow in the middle of the object. | A dark centre can mean a hollow centre, but only if the shape is known; a pure line integral alone does not say how the glow is spread along the line. |
-| The brightest pixel is where the glow is strongest. | It is where the path through glowing material is the longest or strongest in total; for a shell that is at the inner edge, not where the emission is largest. |
+| A dark centre in the photo means there is no glow in the middle of the object. | A dark centre can mean a hollow centre, but one photo cannot prove it: each pixel gives only the total along its line, not where along the line the glow comes from. |
+| The brightest pixel is where the glow is strongest. | It is where the total along the line of sight is largest, which means a long path through glowing material. In a shell the emission is the same everywhere in the wall, yet the brightest pixel sits at the inner edge. |
 
 ## Glossary
 - **line of sight**: the straight line from a camera pixel through the object

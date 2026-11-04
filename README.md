@@ -2,14 +2,14 @@
 
 [![Checks](https://github.com/KrunalPanchal1995/openabel/actions/workflows/ci.yml/badge.svg)](https://github.com/KrunalPanchal1995/openabel/actions/workflows/ci.yml) ![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square) ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square) [![Open in Colab](https://img.shields.io/badge/Colab-session%201-F9AB00?style=flat-square&logo=googlecolab&logoColor=white)](https://colab.research.google.com/github/KrunalPanchal1995/openabel/blob/main/sessions/session-01/lesson.ipynb) [![Live apps](https://img.shields.io/badge/live-apps-1f6feb?style=flat-square)](https://krunalpanchal1995.github.io/openabel/)
 
-**Recover a 3D flame slice from one 2D photo, in three sessions.**
+**Recover a 3D flame slice from one 2D photo, in four sessions.**
 
 openabel teaches the Abel transform, the mathematics that turns a flat photo of a round flame into its glowing inside, using only Python and a browser.
 
 - **Start from a glowing ball.** Session 1 needs only school geometry (Pythagoras) and shows what a camera really records.
-- **See the noise problem for yourself.** Session 3 measures how inversion amplifies noise and how smoothing trades it for bias.
+- **See the noise problem for yourself.** Session 3 measures how inversion amplifies noise and how smoothing trades it for bias; Session 4 chooses the smoothing from the photo alone.
 - **Know you got it right.** Each session ends with a checkpoint that prints PASS or FAIL against hand calculations and an exact analytic pair.
-- **Build the missing half.** The repo stops at Session 3 on purpose; the roadmap shows the path to the Target.
+- **Build the missing half.** The repo stops at Session 4 on purpose; the roadmap shows the path to the Target.
 
 [Target](#the-target) · [Who is this for](#who-is-this-for) · [Quick start](#quick-start) · [Sessions](#sessions) · [Roadmap](#roadmap) · [Contribute](#contribute) · [Explainer PDF](docs/explainer.pdf)
 
@@ -81,8 +81,9 @@ Every session also opens in your browser with sliders (no install): [live apps](
 | 1 | [A photo adds up the light along every line of sight](sessions/session-01/README.md) | Level 1: conceptual interactive model | 60 min | [open](https://krunalpanchal1995.github.io/openabel/session-01/) |
 | 2 | [From a radial recipe to a photo: the forward Abel transform](sessions/session-02/README.md) | Level 2: mathematical engineering model | 75 min | [open](https://krunalpanchal1995.github.io/openabel/session-02/) |
 | 3 | [Back from the photo: onion peeling, noise and smoothing](sessions/session-03/README.md) | Level 3: simulation and validation | 90 min | [open](https://krunalpanchal1995.github.io/openabel/session-03/) |
+| 4 | [No peeking at the truth: choosing the smoothing from the photo alone](sessions/session-04/README.md) | Level 3: simulation and validation | 90 min | [open](https://krunalpanchal1995.github.io/openabel/session-04/) |
 
-Each session follows the same six steps: A real-world problem, B concept and theory, C visual explanation, D interactive simulation, E worked example and experiment, F assessment and design challenge. Each ends with `checkpoint.py`, which prints `PASS` or `FAIL` against reference numbers. Session 3 also contains the real-world mini-project: **Recover the inside of a candle-like flame from a synthetic photo**.
+Each session follows the same six steps: A real-world problem, B concept and theory, C visual explanation, D interactive simulation, E worked example and experiment, F assessment and design challenge. Each ends with `checkpoint.py`, which prints `PASS` or `FAIL` against reference numbers. Session 3 also contains the real-world mini-project **Recover the inside of a candle-like flame from a synthetic photo**, and Session 4 the mini-project **Choose the smoothing for the candle without peeking**.
 
 ## Architecture
 
@@ -91,14 +92,15 @@ flowchart LR
   S1[Session 1<br/>A photo adds up the light along every line of sight]
   S2[Session 2<br/>From a radial recipe to a photo: the forward Abel transform]
   S3[Session 3<br/>Back from the photo: onion peeling, noise and smoothing]
-  R[Roadmap S4+<br/>YOU build this]
+  S4[Session 4<br/>No peeking at the truth: choosing the smoothing from the photo alone]
+  R[Roadmap S5+<br/>YOU build this]
   T((Target))
-  S1 --> S2 --> S3 --> R --> T
+  S1 --> S2 --> S3 --> S4 --> R --> T
 ```
 
 | Folder or file | What is inside |
 |---|---|
-| `sessions/` | three sessions: README (A-F), `lesson.py`, notebook, live app, exercises, activity sheet, checkpoint |
+| `sessions/` | four sessions: README (A-F), `lesson.py`, notebook, live app, exercises, activity sheet, checkpoint |
 | `promo/` | the Target: media, live links, and the roadmap (path only) |
 | `docs/` | `explainer.tex` and the built `explainer.pdf` |
 | `tests/` | runs every lesson and checkpoint headless |
@@ -110,7 +112,6 @@ flowchart LR
 
 | Milestone | What you will build | Difficulty |
 |---|---|---|
-| Session 4: Choose the smoothing from the photo alone | A function that selects lam from a single noisy photo, replacing the grid search that peeks at the true profile. | intermediate |
 | Session 5: Find the flame axis | An axis finder with sub-pixel accuracy, used before the inversion. | intermediate |
 | Session 6: Use both sides and neighbouring rows | A whole-image inversion of all 20 rows with less noise than row-by-row inversion. | advanced |
 | Session 7: Keep the hollow base hollow | An inversion that keeps the dark core of the candle base without negative values. | advanced |

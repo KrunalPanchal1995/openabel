@@ -1,7 +1,7 @@
 [project]
 name = "openabel"
 version = "0.1.0"
-description = "Learn how one side-view photo reveals the inside of a flame: line integrals, the Abel transform, inversion and noise, in 3 sessions."
+description = "Learn how one side-view photo reveals the inside of a flame: line integrals, the Abel transform, inversion and noise, in 4 sessions."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

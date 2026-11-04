@@ -10,7 +10,7 @@
 \setlength{\parindent}{0pt}
 \begin{document}
 
-\begin{center}{\LARGE\bfseries openabel}\\[0.4em]{\large Recover a 3D flame slice from one 2D photo, in three sessions.}\\[0.2em]\small PAN IIT OSS explainer \textbullet{} higher secondary to advanced undergraduate (levels 4-6)\end{center}
+\begin{center}{\LARGE\bfseries openabel}\\[0.4em]{\large Recover a 3D flame slice from one 2D photo, in four sessions.}\\[0.2em]\small PAN IIT OSS explainer \textbullet{} higher secondary to advanced undergraduate (levels 4-6)\end{center}
 
 \section*{Why this exists}
 A camera records the sum of the light along each line of sight, so a photo of a round flame hides its inside. This explainer shows the mathematics that undoes the summing, the Abel transform, and why noise makes the undoing hard.
@@ -18,11 +18,12 @@ A camera records the sum of the light along each line of sight, so a photo of a 
 \section*{The end goal}
 Recover a 3D flame slice from a 2D photo with the Abel inversion. The end goal is to recover a 3D flame slice from a 2D photo with the Abel inversion, as used for radial soot, temperature and emission profiles of laminar flames, plasma jets and sprays. The same mathematics appears in medical-style tomography of round objects and in astronomy.
 
-\section*{How the three sessions build up}
+\section*{How the four sessions build up}
 \begin{enumerate}[nosep]
 \item \textbf{Session 1: A photo adds up the light along every line of sight} (Level 1, conceptual interactive model, 60 min).
 \item \textbf{Session 2: From a radial recipe to a photo: the forward Abel transform} (Level 2, mathematical engineering model, 75 min).
 \item \textbf{Session 3: Back from the photo: onion peeling, noise and smoothing} (Level 3, simulation and validation, 90 min).
+\item \textbf{Session 4: No peeking at the truth: choosing the smoothing from the photo alone} (Level 3, simulation and validation, 90 min).
 \end{enumerate}
 
 \section{Session 1: A photo adds up the light along every line of sight}
@@ -179,12 +180,49 @@ Three rings of width 1 mm (R = 3 mm) give measured brightness I = (12, 9.121, 4.
 \item \textbf{Design and optimisation challenge.} Design: a ring-shaped flame (r0 = 1.5 mm, w = 0.4 mm) is photographed with 1 percent noise and 40 rings. Choose between lam = 0.01, 0.1 and 10 and give the total error of each (use \texttt{bias\_noise\_exact}). What risk does the largest lam bring for a hollow flame?
 \end{enumerate}
 
+\section{Session 4: No peeking at the truth: choosing the smoothing from the photo alone}
+
+\subsection*{A. Real-world problem}
+In Session 3 the smoothing strength was chosen by trying several values and keeping the one whose answer was closest to the true flame. With a real photograph nobody knows the true flame, so that recipe is impossible. What can the photo itself tell us about how much smoothing it needs? It tells us the size of its own noise, and how well a smoothed copy of it would predict a clean copy. This is general education about image processing, not a measurement method for any safety decision.
+
+\subsection*{B. Concept and theory}
+The smoothed answer is linear in the photo, $\hat\varepsilon = G I$, and the smoothed photo is $A I$ with the hat matrix $A = W G$; its trace df counts the effective parameters. A smooth profile has tiny second differences, so what remains in them is noise, and the median absolute deviation gives the noise size $\sigma$ from the photo alone. Three rules then choose $\lambda$: the discrepancy principle (the largest $\lambda$ with $\mathrm{rss}/N\le\sigma^2$), UPRE (the smallest $\mathrm{rss}+2\sigma^2\mathrm{df}-N\sigma^2$, an unbiased estimate of the prediction error) and generalised cross-validation (the smallest $N\,\mathrm{rss}/(N-\mathrm{df})^2$, which needs no $\sigma$ and rests on the leave-one-out shortcut $e_i=(I_i-(AI)_i)/(1-A_{ii})$).
+
+\begin{equation*}
+\hat\sigma=\frac{1.4826}{\sqrt6}\,\mathrm{median}\,\bigl|d_i-\mathrm{median}(d)\bigr|,\quad d_i=I_{i+1}-2I_i+I_{i-1}
+\end{equation*}
+
+\begin{equation*}
+\mathrm{UPRE}(\lambda)=\mathrm{rss}+2\sigma^{2}\,\mathrm{df}-N\sigma^{2},\qquad \mathrm{GCV}(\lambda)=\frac{N\,\mathrm{rss}}{(N-\mathrm{df})^{2}}
+\end{equation*}
+
+\begin{center}\includegraphics[width=0.85\linewidth]{figures/s04_choose_lam.png}\\\small One noisy candle photo: the error against lam and the lam each rule picks, the discrepancy rule, UPRE against the hidden error, and the recovered emission.\end{center}
+
+\subsection*{E. Worked example}
+For the height-8 row of the 3 percent candle photo (N = 40), the noise from all rows is sigma = 0.150 (sigma squared 0.0224, N sigma squared 0.896). With lam = 0.3, 3 and 15.8 the fit leaves rss = 0.596, 0.829 and 0.921 with df = 16.76, 10.11 and 7.27.
+\begin{enumerate}[nosep]
+\item UPRE = rss + 2 sigma\textasciicircum{}2 df - N sigma\textasciicircum{}2 = 0.451, 0.386 and 0.351: the smallest is lam = 15.8.
+\item GCV = N rss / (N - df)\textasciicircum{}2 = 0.0441, 0.0371 and 0.0344: again lam = 15.8.
+\item Discrepancy: rss / N = 0.0149, 0.0207 and 0.0230 against sigma\textasciicircum{}2 = 0.0224; the largest that passes is lam = 3.
+\item The true emission errors, which the rules never saw, are 0.060, 0.044 and 0.047.
+\end{enumerate}
+\textbf{Answer.} UPRE and GCV prefer lam = 15.8; the discrepancy rule, limited to these three values, picks lam = 3; the true errors are 0.047 and 0.044.
+
+\subsection*{F. Questions}
+\begin{enumerate}[nosep]
+\item \textbf{Conceptual.} Why can we not choose lam by making the residual as small as possible?
+\item \textbf{Numerical.} A photo has N = 50 pixels and noise sigma = 0.2. Smoothing with lam1 leaves rss = 1.5 with df = 15; lam2 leaves rss = 1.9 with df = 9. Compute UPRE, GCV and the discrepancy test for both, and say which lam each rule prefers.
+\item \textbf{Graph and simulation interpretation.} In the top right panel of the first figure, the residual of the fit reaches the dashed noise line only at lam of about 80, while the best lam is about 5. What does this tell you about the discrepancy rule?
+\item \textbf{Design and optimisation challenge.} For the candle photo at 1, 3 and 6 percent noise, report the mean worst-row error of UPRE on all rows, of the oracle and of the fixed lam = 3. Which rule would you ship, and how does the chosen lam change with the noise?
+\end{enumerate}
+
 \section{Real-world mini-project}
 \textbf{Recover the inside of a candle-like flame from a synthetic photo.} A lab gives you a synthetic side-view photograph of a candle-like flame with 3 percent noise (\texttt{candle\_photo(N=40, frac=0.03)} in Session 3). The flame is hollow near its base and fills in higher up. Recover the radial emission at three heights (z = 4, 8 and 12 mm) with \texttt{invert\_row}, trying the smoothing strengths in \texttt{LAM\_GRID}, and choose the one with the smallest worst-row error. Because this is a synthetic photo, the true emission \texttt{candle\_emission} is known, so you can score each choice.
 
+\textbf{Choose the smoothing for the candle without peeking (classroom exercise only).} Given only the noisy 3 percent candle photo, pick one smoothing strength for all rows without using the true emission, then grade the rule on 20 noise draws against the best possible strength (the oracle) and the fixed lam = 3 of Session 3. With UPRE on all rows the mean worst-row error is 0.049 (oracle 0.044, fixed lam = 3 0.053); GCV applied to one row at a time is erratic (mean 0.066, worst 0.175); the line ``0.05 on every draw'' cannot be met by any rule, since even the oracle reaches it on only 14 of 20 draws. This is a teaching exercise on synthetic data, not a method for measuring a real flame.
+
 \section{The path ahead}
 \begin{enumerate}[nosep]
-\item \textbf{Session 4: Choose the smoothing from the photo alone.} A function that selects lam from a single noisy photo, replacing the grid search that peeks at the true profile.
 \item \textbf{Session 5: Find the flame axis.} An axis finder with sub-pixel accuracy, used before the inversion.
 \item \textbf{Session 6: Use both sides and neighbouring rows.} A whole-image inversion of all 20 rows with less noise than row-by-row inversion.
 \item \textbf{Session 7: Keep the hollow base hollow.} An inversion that keeps the dark core of the candle base without negative values.
@@ -215,6 +253,14 @@ Three rings of width 1 mm (R = 3 mm) give measured brightness I = (12, 9.121, 4.
 \item \textbf{Numerical.} Hint: noise = sigma * gain; then divide by the peak. Solution: noise = 0.02 a.u. * 5.9 per mm = 0.12 a.u. per mm. Relative to the peak of 1 a.u. per mm that is 12 percent, six times the 2 percent noise of the photo. The outer ring has gain 0.56 per mm and noise 0.011 a.u. per mm (1 percent). Units: a.u. times per mm is a.u. per mm, the unit of the emission.
 \item \textbf{Graph and simulation interpretation.} Hint: Move the log10 lam slider in the app or read the third panel of the figure. Solution: The bias is flat at about 0.4 percent for small lam and rises to about 1.9 percent at lam = 30. The noise falls steadily from about 2.7 percent to about 0.4 percent. The total is about 2.7 percent for tiny lam, falls to a minimum of about 1.1 percent near lam = 0.3 (log10 lam = -0.5), then rises again as the bias takes over. The best choice is the one at the valley, not the largest lam.
 \item \textbf{Design and optimisation challenge.} Hint: Print \texttt{bias\_noise\_exact(lambda q: ring\_eps(q, 1.5, 0.4), 40, lam, 0.01)} for the three values. Solution: The total errors are about 2.7 percent for lam = 0.01 (noise dominates), 2.0 percent for lam = 0.1 (best) and 7.7 percent for lam = 10 (bias dominates). Choose lam = 0.1. With lam = 10 or more, smoothing lowers the ring peak and fills or even drives negative the dark hole on the axis, so the flame would be misread as less hollow and with negative emission, which is unphysical. Trade-off: a ring flame needs less smoothing than a Gaussian flame because it has sharper structure.
+\end{enumerate}
+
+\subsection*{Session 4}
+\begin{enumerate}[nosep]
+\item \textbf{Conceptual.} Hint: What lam gives the smallest possible residual, and what does the recovered profile look like then? Solution: The residual is zero at lam = 0, where the smoothed photo is the photo itself and the inversion is plain onion peeling: it fits the noise perfectly and amplifies it into a wild profile. A good choice leaves a residual about as large as the noise. UPRE and GCV correct the residual for the df numbers the smoother spends on fitting noise.
+\item \textbf{Numerical.} Hint: UPRE = rss + 2 sigma\textasciicircum{}2 df - N sigma\textasciicircum{}2 with sigma\textasciicircum{}2 = 0.04 and N sigma\textasciicircum{}2 = 2.0. Solution: lam1: UPRE = 1.5 + 1.2 - 2.0 = 0.70, GCV = 50 x 1.5 / 35\textasciicircum{}2 = 0.0612, rss / N = 0.030 passes. lam2: UPRE = 1.9 + 0.72 - 2.0 = 0.62, GCV = 50 x 1.9 / 41\textasciicircum{}2 = 0.0565, rss / N = 0.038 passes. UPRE and GCV prefer lam2, and the discrepancy rule takes the largest lam that passes, also lam2.
+\item \textbf{Graph and simulation interpretation.} Hint: How large is the residual of a perfect smoother compared with sigma? Solution: A smoother that uses df numbers fits part of the noise, so even a perfect one leaves a mean-square residual of about sigma\textasciicircum{}2 (N - df) / N, roughly 0.78 sigma\textasciicircum{}2 at the best lam. The discrepancy rule waits until the residual reaches sigma\textasciicircum{}2, which needs a far stronger lam, so it over-smooths.
+\item \textbf{Design and optimisation challenge.} Hint: Also print the median of choose\_lam(img, ``upre'') over the draws for each noise level. Solution: Mean worst-row error of UPRE, oracle and fixed lam = 3: 0.023, 0.021, 0.024 at 1 percent; 0.049, 0.044, 0.053 at 3 percent; 0.080, 0.072, 0.102 at 6 percent. The median lam chosen by UPRE grows with the noise (about 1.6, 10 and 40). Ship UPRE on all rows (or GCV if sigma cannot be trusted): it is within about 10 percent of the oracle and adapts, while the fixed value is tuned for one noise level.
 \end{enumerate}
 
 \section{How to join}

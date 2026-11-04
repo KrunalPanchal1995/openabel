@@ -2,16 +2,6 @@
 
 This is the path, not the code. Each milestone says what you learn, what you build, and how you know it works. Pick one and open a pull request. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-## Session 4: Choose the smoothing from the photo alone
-
-**You will learn:** Generalised cross-validation or the discrepancy principle: picking lam without knowing the truth.
-
-**You will build:** A function that selects lam from a single noisy photo, replacing the grid search that peeks at the true profile.
-
-**Checkpoint (not met by the shipped code):** On the 3 percent noise candle photo, a truth-free choice keeps the worst-row error at or below 0.05 for 20 different noise draws (the shipped project picks lam by comparing with the truth).
-
-**Difficulty:** intermediate
-
 ## Session 5: Find the flame axis
 
 **You will learn:** Estimating the symmetry axis from the photo (centroid, or matching left and right halves).

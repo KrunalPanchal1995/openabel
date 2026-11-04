@@ -63,6 +63,45 @@ def run_checks(L):
     checks.append((f"mini-project: smallest worst-row error is at lam = 3 and is below 0.05 (got lam = {best}, {worst[best]:.3f})", best == 3.0 and worst[best] < 0.05))
     checks.append(("mini-project: the candle is hollow at z = 4 mm and filled at z = 12 mm",
                    float(L.candle_emission(0.0, 4)) < 0.6 * float(L.candle_emission(1.2, 4)) and float(L.candle_emission(0.0, 12)) == max(L.candle_emission(np.linspace(0, 5, 100), 12))))
+    # ---- Fourier-series inversion ---------------------------------------------------------------
+    gfun = lambda q: L.gauss_eps(q, 1.0)
+    rfun = lambda q: L.ring_eps(q, 1.5, 0.4)
+    Ig = L.photo_profile(gfun, N)
+    ef = L.fourier_invert(Ig, 8)
+    errf = float(np.max(np.abs(ef - truth)))
+    checks.append((f"exact pair: noise-free Fourier inversion with 8 terms recovers the Gaussian to within 0.02 of its peak (worst {errf:.4f})", errf < 0.02))
+    # independent forward check: the fitted continuous cosine series, photographed by the fine integral of Step 1,
+    # reproduces the photo (not made with the ring matrix W)
+    a_coef = np.linalg.pinv(L.ring_matrix(N) @ L.fourier_matrix(N, 8)) @ Ig
+    series = lambda q: sum(a_coef[n] * np.cos(n * np.pi * np.asarray(q) / L.R_MM) for n in range(8))
+    back = L.photo_profile(series, N)
+    checks.append((f"the fitted cosine series, photographed again by the fine integral, matches the photo to 1 percent of its peak (worst {np.max(np.abs(back - Ig)) / Ig.max():.4f})",
+                   np.max(np.abs(back - Ig)) / Ig.max() < 0.01))
+    checks.append(("with terms = N the Fourier inversion is identical to onion peeling", np.allclose(L.fourier_invert(Ig, N), L.onion_peel(Ig), atol=1e-6)))
+    checks.append(("a constant emission needs one term: terms = 1 recovers eps = 3 from its own photo",
+                   np.allclose(L.fourier_invert(L.ring_matrix(20) @ np.full(20, 3.0), 1), 3.0, atol=1e-9)))
+    # noise from the formula agrees with a Monte Carlo
+    rng_f = np.random.default_rng(5)
+    est = np.array([L.fourier_invert(L.add_noise(Ig, 0.01, rng_f), 10) for _ in range(400)])
+    mc_noise = float(np.sqrt(np.mean(est.std(axis=0) ** 2)))
+    fm_noise = L.bias_noise_fourier(gfun, N, 10, 0.01)[1]
+    checks.append((f"noise by formula ({fm_noise:.4f}) agrees with 400 noisy photos ({mc_noise:.4f}) within 10 percent", abs(mc_noise - fm_noise) / fm_noise < 0.10))
+    nz = [L.bias_noise_fourier(rfun, N, T, 0.01)[1] for T in range(3, 41)]
+    checks.append(("noise grows with every added term", all(b > a for a, b in zip(nz, nz[1:]))))
+    bi = [L.bias_noise_fourier(rfun, N, T, 0.01)[0] for T in (4, 8, 12, 16)]
+    checks.append(("ring flame: bias falls as terms are added (4, 8, 12 terms) and is flat after 12", bi[0] > bi[1] > bi[2] and abs(bi[3] - bi[2]) < 0.002))
+    lam_list = np.logspace(-6, 1, 29)
+    best_s = {n_: min(L.bias_noise_exact(f_, N, l, 0.01)[2] for l in lam_list) for n_, f_ in (("g", gfun), ("r", rfun))}
+    best_f = {n_: min(L.bias_noise_fourier(f_, N, T, 0.01)[2] for T in range(3, N + 1)) for n_, f_ in (("g", gfun), ("r", rfun))}
+    checks.append((f"comparison at 1 percent noise: Gaussian best total error {best_f['g']:.4f} (Fourier) against {best_s['g']:.4f} (smoothing); ring {best_f['r']:.4f} against {best_s['r']:.4f}",
+                   best_f["g"] < 0.8 * best_s["g"] and abs(best_f["r"] - best_s["r"]) / best_s["r"] < 0.15))
+    bad = 0
+    for T in (0, N + 1):
+        try:
+            L.fourier_invert(Ig, T)
+        except ValueError:
+            bad += 1
+    checks.append(("zero terms or more terms than pixels is refused", bad == 2))
     return checks
 
 

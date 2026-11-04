@@ -61,6 +61,21 @@ The first figure has three panels for a Gaussian flame (a = 1 mm, 40 rings, 1 pe
 
 *Ring-shaped flame: three smoothing strengths and the bias-noise trade-off; heavy smoothing blurs and flattens the ring.*
 
+**A second method: a Fourier series.** Instead of penalising roughness, `fourier_invert(I, terms)` describes the flame with a few smooth shapes, eps(r) = a_0 + a_1 cos(pi r / R) + ... , and fits the amplitudes to the photo by least squares (W times each cosine is its photo). The number of terms plays the role of the smoothing strength: few terms are smooth but biased, and with terms equal to the number of pixels the answer is exactly onion peeling. It is checked on the exact Gaussian pair (8 terms recover the noise-free Gaussian to 0.011 of its peak), by photographing the fitted cosine series again with the fine integral of Step 1, and by comparing the noise predicted by formula with 400 noisy photos. The figure compares bias against noise for both methods at 1 percent noise (circles mark the smallest total error):
+
+| 1 percent noise, N = 40 | Gaussian flame (a = 1 mm) | Ring flame (r0 = 1.5 mm, w = 0.4 mm) |
+|---|---|---|
+| Smoothing: best total error (setting) | 0.0107 of the peak (lam = 0.32) | 0.0196 (lam = 0.18) |
+| Fourier: best total error (setting) | 0.0061 (6 terms) | 0.0180 (12 terms) |
+| Settings within 25% of the best total | smoothing lam 0.056 to 1.8; Fourier 6 to 8 terms | smoothing lam 0.032 to 0.56; Fourier 11 to 18 terms |
+| Too little smoothing or too few terms | Fourier, 4 terms: bias 0.038 | Fourier, 6 terms: bias 0.11, a negative lobe of -0.15 of the peak |
+
+![Bias against noise for the smoothing method (blue) and the Fourier series (orange) on the Gaussian and ring flames, and the recovered ring from one noisy photo.](../../docs/figures/s03_fourier_vs_smoothing.png)
+
+*Bias against noise for the smoothing method (blue) and the Fourier series (orange) on the Gaussian and ring flames, and the recovered ring from one noisy photo.*
+
+**When is each better?** The Fourier series wins when the flame is smooth and wide: six cosines describe a Gaussian, so only six numbers carry noise and the total error is 43 percent lower than with smoothing. It is a tie for the ring flame (8 percent better), and then the choice of terms is delicate: the trade-off curve is jagged, and below about 10 terms the bias jumps and the estimate shows ripples and negative emission that no real flame has. Smoothing has a single smooth trade-off curve, makes no assumption about the shape (it only dislikes roughness), and its error varies gradually with lam, but it blurs sharp rims and cannot give a short list of numbers describing the flame. In practice: use the Fourier series when you expect a smooth profile and want a compact description; use smoothing when the profile may have rims or hollows; and in both cases choose the setting by simulating your own flame with `bias_noise_exact` or `bias_noise_fourier`, as in this session, rather than trusting a rule of thumb.
+
 ## D. Interactive simulation
 Run the lesson (`python start.py 3`), then open the live app: [Session 3: noise and smoothing in the inversion](https://krunalpanchal1995.github.io/openabel/session-03/) (or `app.html` in this folder). Slide the smoothing strength from tiny to large on the Gaussian flame and watch the grey noise band shrink while the blue average profile moves away from the black truth; then switch to the trade-off graph and find the minimum of the black curve.
 

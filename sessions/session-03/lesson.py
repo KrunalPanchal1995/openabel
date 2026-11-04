@@ -143,6 +143,54 @@ def bias_noise_exact(eps_fn, N, lam, frac, R=R_MM):
 
 
 # %% [markdown]
+# ## Step 4b: a Fourier-series alternative
+# Instead of penalising roughness, *describe* the flame with a few smooth shapes. The emission
+# is written as a cosine series on 0 <= r <= R,
+#
+#     eps(r) = a_0 + a_1 cos(pi r / R) + a_2 cos(2 pi r / R) + ... + a_(M-1) cos((M-1) pi r / R),
+#
+# which is smooth, symmetric about the axis (zero slope at r = 0) and needs only M numbers.
+# The photo of each cosine is the matrix W times its values on the rings, so the M amplitudes
+# follow from least squares on the N photo pixels. The number of terms M plays the role of
+# the smoothing strength: few terms = smooth but biased, M = N = the noisy onion peeling
+# (the N cosines can reproduce any N ring values, so the answer is identical to Step 2).
+
+# %%
+def fourier_matrix(N, terms, R=R_MM):
+    """N x terms matrix of cos(n pi r_j / R) at the ring middles."""
+    return np.cos(np.pi * np.outer(radii(N, R), np.arange(terms)) / R)
+
+
+def fourier_gain(N, terms, R=R_MM):
+    """Matrix G with eps_hat = G I for the Fourier-series inversion with `terms` cosines."""
+    if not 1 <= terms <= N:
+        raise ValueError("terms must be between 1 and the number of pixels N")
+    Phi = fourier_matrix(N, terms, R)
+    return Phi @ np.linalg.pinv(ring_matrix(N, R) @ Phi)
+
+
+def fourier_invert(I, terms, R=R_MM):
+    """Emission on the rings from the photo profile I, using a cosine series with `terms` terms."""
+    I = np.asarray(I, dtype=float)
+    return fourier_gain(len(I), terms, R) @ I
+
+
+def bias_noise_linear(G, eps_fn, N, frac, R=R_MM):
+    """RMS bias, noise and total error (relative to the peak of eps) of any linear inversion eps_hat = G I."""
+    I0 = photo_profile(eps_fn, N, R)
+    truth = eps_fn(radii(N, R))
+    peak = truth.max()
+    bias = np.sqrt(np.mean((G @ I0 - truth) ** 2)) / peak
+    noise = frac * I0.max() * np.sqrt(np.mean(np.sum(G * G, axis=1))) / peak
+    return float(bias), float(noise), float(np.hypot(bias, noise))
+
+
+def bias_noise_fourier(eps_fn, N, terms, frac, R=R_MM):
+    """The Fourier-series counterpart of `bias_noise_exact` (no random draws)."""
+    return bias_noise_linear(fourier_gain(N, terms, R), eps_fn, N, frac, R)
+
+
+# %% [markdown]
 # ## Step 5: mini-project material, a candle-like flame
 # A synthetic side-view "photo" of an axisymmetric flame, in mm: the flame is hollow near the
 # base (a ring of glow around dark wax vapour), fills in higher up, and tapers to a tip.
@@ -269,6 +317,40 @@ if __name__ == "__main__":
     ax.legend()
     fig2.tight_layout()
     fig2.savefig(OUT / "ring_flame.png", dpi=110)
+
+    # figure 4: Fourier series against smoothing
+    termsl = np.arange(3, N + 1)
+    fst = {name: np.array([bias_noise_fourier(f, N, int(T), frac) for T in termsl]) for name, f in (("Gaussian", gauss), ("ring", ringf))}
+    tst = {"Gaussian": stats, "ring": statr}
+    fig4, axes4 = plt.subplots(1, 3, figsize=(14, 4))
+    for ax, name in zip(axes4[:2], ("Gaussian", "ring")):
+        ax.loglog(tst[name][:, 1], tst[name][:, 0], "-", color="#003f7f", lw=2, label="smoothing (lam)")
+        ax.loglog(fst[name][:, 1], fst[name][:, 0], "s-", color="#c86a00", ms=4, label="Fourier series (terms)")
+        for st, col in ((tst[name], "#003f7f"), (fst[name], "#c86a00")):
+            j = np.argmin(st[:, 2])
+            ax.plot(st[j, 1], st[j, 0], "o", ms=10, mfc="none", mec=col, mew=2)
+        ax.set_xlabel("noise (RMS, relative to peak)")
+        ax.set_ylabel("bias (RMS, relative to peak)")
+        ax.set_title(f"{name} flame, 1% noise: circles mark the lowest total error")
+        ax.title.set_fontsize(9)
+        ax.grid(alpha=0.3, which="both")
+        ax.legend(fontsize=8)
+    ax = axes4[2]
+    jf = int(termsl[np.argmin(fst["ring"][:, 2])])
+    ax.plot(r, ringf(r), "k", lw=2, label="truth")
+    ax.plot(r, fourier_invert(Ir, jf), color="#c86a00", label=f"Fourier, {jf} terms")
+    ax.plot(r, fourier_invert(Ir, 6), "--", color="#d81b60", label="Fourier, 6 terms (too few)")
+    ax.plot(r, smooth_invert(Ir, bestr), color="#003f7f", label=f"smoothing, lam = {bestr:.2g}")
+    ax.set_xlabel("distance from the axis r (mm)")
+    ax.set_ylabel("emission eps (a.u. per mm)")
+    ax.set_title("Ring flame, one noisy photo", fontsize=9)
+    ax.grid(alpha=0.3)
+    ax.legend(fontsize=8)
+    fig4.tight_layout()
+    fig4.savefig(OUT / "fourier_vs_smoothing.png", dpi=110)
+    for name in ("Gaussian", "ring"):
+        jt, jf_ = np.argmin(tst[name][:, 2]), np.argmin(fst[name][:, 2])
+        print(f"{name}: smoothing best total {tst[name][jt, 2]:.4f} (lam {lams[jt]:.2g}); Fourier best total {fst[name][jf_, 2]:.4f} ({termsl[jf_]} terms)")
 
     # mini-project
     img = candle_photo(N=40, frac=0.03)

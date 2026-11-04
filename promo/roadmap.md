@@ -2,23 +2,13 @@
 
 This is the path, not the code. Each milestone says what you learn, what you build, and how you know it works. Pick one and open a pull request. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-## Session 5: Find the flame axis
+## Session 6: Use neighbouring rows
 
-**You will learn:** Estimating the symmetry axis from the photo (centroid, or matching left and right halves).
-
-**You will build:** An axis finder with sub-pixel accuracy, used before the inversion.
-
-**Checkpoint (not met by the shipped code):** With the true axis shifted by 1 pixel (0.15 mm) the worst-row error stays at or below 0.045 (the shipped code, which assumes a known axis, gives 0.064 at lam = 3).
-
-**Difficulty:** intermediate
-
-## Session 6: Use both sides and neighbouring rows
-
-**You will learn:** Averaging the left and right halves and smoothing along the flame height before inverting.
+**You will learn:** Smoothing along the flame height before inverting (averaging the left and right halves is already done in Session 5).
 
 **You will build:** A whole-image inversion of all 20 rows with less noise than row-by-row inversion.
 
-**Checkpoint (not met by the shipped code):** RMS error over the full 20-row slice at or below 0.025 of the peak at 3 percent noise (the shipped row-by-row inversion gives 0.039 at lam = 3).
+**Checkpoint (not met by the shipped code):** RMS error over the full 20-row slice at or below 0.025 of the peak at 3 percent noise (the shipped row-by-row inversion gives 0.039 at lam = 3 with one half of the photo and 0.034 with both halves, as in Session 5).
 
 **Difficulty:** advanced
 

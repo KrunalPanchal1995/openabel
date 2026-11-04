@@ -10,7 +10,7 @@
 \setlength{\parindent}{0pt}
 \begin{document}
 
-\begin{center}{\LARGE\bfseries openabel}\\[0.4em]{\large Recover a 3D flame slice from one 2D photo, in four sessions.}\\[0.2em]\small PAN IIT OSS explainer \textbullet{} higher secondary to advanced undergraduate (levels 4-6)\end{center}
+\begin{center}{\LARGE\bfseries openabel}\\[0.4em]{\large Recover a 3D flame slice from one 2D photo, in five sessions.}\\[0.2em]\small PAN IIT OSS explainer \textbullet{} higher secondary to advanced undergraduate (levels 4-6)\end{center}
 
 \section*{Why this exists}
 A camera records the sum of the light along each line of sight, so a photo of a round flame hides its inside. This explainer shows the mathematics that undoes the summing, the Abel transform, and why noise makes the undoing hard.
@@ -18,12 +18,13 @@ A camera records the sum of the light along each line of sight, so a photo of a 
 \section*{The end goal}
 Recover a 3D flame slice from a 2D photo with the Abel inversion. The end goal is to recover a 3D flame slice from a 2D photo with the Abel inversion, as used for radial soot, temperature and emission profiles of laminar flames, plasma jets and sprays. The same mathematics appears in medical-style tomography of round objects and in astronomy.
 
-\section*{How the four sessions build up}
+\section*{How the five sessions build up}
 \begin{enumerate}[nosep]
 \item \textbf{Session 1: A photo adds up the light along every line of sight} (Level 1, conceptual interactive model, 60 min).
 \item \textbf{Session 2: From a radial recipe to a photo: the forward Abel transform} (Level 2, mathematical engineering model, 75 min).
 \item \textbf{Session 3: Back from the photo: onion peeling, noise and smoothing} (Level 3, simulation and validation, 90 min).
 \item \textbf{Session 4: No peeking at the truth: choosing the smoothing from the photo alone} (Level 3, simulation and validation, 90 min).
+\item \textbf{Session 5: Where is the axis? Finding the flame's symmetry axis from the photo} (Level 3, simulation and validation, 90 min).
 \end{enumerate}
 
 \section{Session 1: A photo adds up the light along every line of sight}
@@ -216,15 +217,51 @@ For the height-8 row of the 3 percent candle photo (N = 40), the noise from all 
 \item \textbf{Design and optimisation challenge.} For the candle photo at 1, 3 and 6 percent noise, report the mean worst-row error of UPRE on all rows, of the oracle and of the fixed lam = 3. Which rule would you ship, and how does the chosen lam change with the noise?
 \end{enumerate}
 
+\section{Session 5: Where is the axis? Finding the flame's symmetry axis from the photo}
+
+\subsection*{A. Real-world problem}
+Every inversion so far assumed that the flame's axis runs exactly through the middle of one pixel column. A real camera is never aligned that well: the flame sits a fraction of a pixel to one side, and one pixel here is 0.15 mm. A one-pixel mistake already costs about as much as 3 percent noise does. Can the photo itself tell us where the axis is? Yes, because a round flame looks the same on the left and on the right of its axis. This is general education about image processing, not a measurement method for any safety decision.
+
+\subsection*{B. Concept and theory}
+Positions are measured in pixels from the middle column; a full photo has 79 columns for 40 rings of width $dr = 0.15$ mm. If the axis is at $a$, a pixel at $x$ looks along a line of sight at offset $y=|x-a|\,dr$, and its row of the ring matrix holds the chord length of each ring at that offset, so the photo never has to be resampled. Two finders read only the photo. The centroid is the centre of mass of the brightness. Mirror matching slides a trial axis $c$ and takes the position where the photo best matches its own reflection; interpolating the reflection of a noisy photo makes the cost prefer some positions ("pixel locking"), and smoothing the photo with a Gaussian of 2 pixels first removes that. With the axis found, both halves are inverted at once, which lowers the noise of the answer.
+
+\begin{equation*}
+a_{\mathrm{centroid}}=\frac{\sum_x x\,I(x)}{\sum_x I(x)},\qquad \mathrm{cost}(c)=\operatorname*{mean}_x\bigl[I(x)-I(2c-x)\bigr]^2
+\end{equation*}
+
+\begin{equation*}
+W_{ij}=2\left[\sqrt{r_{j+1}^2-y_i^2}-\sqrt{r_j^2-y_i^2}\right]_+,\qquad y_i=|x_i-a|\,dr
+\end{equation*}
+
+\begin{center}\includegraphics[width=0.85\linewidth]{figures/s05_find_axis.png}\\\small One noisy photo with its true and estimated axis, the mirror cost, the axis errors of both finders over 20 draws at 6 positions, and the cost of a wrong axis.\end{center}
+
+\subsection*{E. Worked example}
+One row has the values 0, 2, 6, 9, 7, 3, 1 at positions 0 to 6.
+\begin{enumerate}[nosep]
+\item Centroid: sum(x I) = 90 and sum(I) = 28, so $a = 90/28 = 3.21$.
+\item Mirror cost: 0.86 at $c = 3$, 4.67 at $c = 3.5$ and 14.33 at $c = 2.5$.
+\item A parabola through these three points has its lowest point at $c = 3.14$.
+\end{enumerate}
+\textbf{Answer.} The centroid gives 3.21, mirror matching 3.14: they agree to within 0.1 pixel (0.015 mm).
+
+\subsection*{F. Questions}
+\begin{enumerate}[nosep]
+\item \textbf{Conceptual.} Why is the brightest pixel a poor estimate of the flame's axis?
+\item \textbf{Numerical.} A row has the values 1, 4, 8, 6, 2 at positions 0 to 4. Compute the centroid, and the mirror cost at $c = 1.5$, 2 and 2.5. What does each finder say?
+\item \textbf{Graph and simulation interpretation.} In the right panel of the second figure, the boxes ``mirror, one half'' and ``mirror, both halves'' use the same axis, yet the first is higher. What does this tell you?
+\item \textbf{Design and optimisation challenge.} For a candle photo with 3 percent noise and the axis 0.5, 1 and 2 pixels from the middle, report the mean worst-row error of ``assume the middle (one half)'', of ``mirror axis, both halves'' and of ``true axis, both halves''. When can you skip the axis search?
+\end{enumerate}
+
 \section{Real-world mini-project}
 \textbf{Recover the inside of a candle-like flame from a synthetic photo.} A lab gives you a synthetic side-view photograph of a candle-like flame with 3 percent noise (\texttt{candle\_photo(N=40, frac=0.03)} in Session 3). The flame is hollow near its base and fills in higher up. Recover the radial emission at three heights (z = 4, 8 and 12 mm) with \texttt{invert\_row}, trying the smoothing strengths in \texttt{LAM\_GRID}, and choose the one with the smallest worst-row error. Because this is a synthetic photo, the true emission \texttt{candle\_emission} is known, so you can score each choice.
 
 \textbf{Choose the smoothing for the candle without peeking (classroom exercise only).} Given only the noisy 3 percent candle photo, pick one smoothing strength for all rows without using the true emission, then grade the rule on 20 noise draws against the best possible strength (the oracle) and the fixed lam = 3 of Session 3. With UPRE on all rows the mean worst-row error is 0.049 (oracle 0.044, fixed lam = 3 0.053); GCV applied to one row at a time is erratic (mean 0.066, worst 0.175); the line ``0.05 on every draw'' cannot be met by any rule, since even the oracle reaches it on only 14 of 20 draws. This is a teaching exercise on synthetic data, not a method for measuring a real flame.
 
+\textbf{Find the axis of the candle photo and invert with it (classroom exercise only).} Given a noisy 3 percent photo of the candle whose axis is 1 pixel (0.15 mm) off the middle, find the axis from the photo alone and invert with both halves, then grade the pipeline on 20 noise draws. With the axis found by mirror matching the mean worst-row error is 0.041 (the same as with the true axis), against 0.065 when the middle is assumed; the centroid gives 0.041 too but scatters more. Using one half only costs 0.053 even with the axis found. The line ``at or below 0.045'' is met on average, not on every draw: 13 of 20 draws, also with the true axis. This is a teaching exercise on synthetic data, not a method for measuring a real flame.
+
 \section{The path ahead}
 \begin{enumerate}[nosep]
-\item \textbf{Session 5: Find the flame axis.} An axis finder with sub-pixel accuracy, used before the inversion.
-\item \textbf{Session 6: Use both sides and neighbouring rows.} A whole-image inversion of all 20 rows with less noise than row-by-row inversion.
+\item \textbf{Session 6: Use neighbouring rows.} A whole-image inversion of all 20 rows with less noise than row-by-row inversion.
 \item \textbf{Session 7: Keep the hollow base hollow.} An inversion that keeps the dark core of the candle base without negative values.
 \item \textbf{Session 8: Render it in 3D and animate.} A looping 3D cut-away animation of the recovered flame.
 \end{enumerate}
@@ -261,6 +298,14 @@ For the height-8 row of the 3 percent candle photo (N = 40), the noise from all 
 \item \textbf{Numerical.} Hint: UPRE = rss + 2 sigma\textasciicircum{}2 df - N sigma\textasciicircum{}2 with sigma\textasciicircum{}2 = 0.04 and N sigma\textasciicircum{}2 = 2.0. Solution: lam1: UPRE = 1.5 + 1.2 - 2.0 = 0.70, GCV = 50 x 1.5 / 35\textasciicircum{}2 = 0.0612, rss / N = 0.030 passes. lam2: UPRE = 1.9 + 0.72 - 2.0 = 0.62, GCV = 50 x 1.9 / 41\textasciicircum{}2 = 0.0565, rss / N = 0.038 passes. UPRE and GCV prefer lam2, and the discrepancy rule takes the largest lam that passes, also lam2.
 \item \textbf{Graph and simulation interpretation.} Hint: How large is the residual of a perfect smoother compared with sigma? Solution: A smoother that uses df numbers fits part of the noise, so even a perfect one leaves a mean-square residual of about sigma\textasciicircum{}2 (N - df) / N, roughly 0.78 sigma\textasciicircum{}2 at the best lam. The discrepancy rule waits until the residual reaches sigma\textasciicircum{}2, which needs a far stronger lam, so it over-smooths.
 \item \textbf{Design and optimisation challenge.} Hint: Also print the median of choose\_lam(img, ``upre'') over the draws for each noise level. Solution: Mean worst-row error of UPRE, oracle and fixed lam = 3: 0.023, 0.021, 0.024 at 1 percent; 0.049, 0.044, 0.053 at 3 percent; 0.080, 0.072, 0.102 at 6 percent. The median lam chosen by UPRE grows with the noise (about 1.6, 10 and 40). Ship UPRE on all rows (or GCV if sigma cannot be trusted): it is within about 10 percent of the oracle and adapts, while the fixed value is tuned for one noise level.
+\end{enumerate}
+
+\subsection*{Session 5}
+\begin{enumerate}[nosep]
+\item \textbf{Conceptual.} Hint: Look at the profile of the flame at 4 mm height, and think about what one noisy pixel is worth. Solution: The flame is a hollow glow ring at its base, so at 4 mm the brightest pixel is 4 pixels (0.6 mm) off the axis, and low in the flame the profile is flat on top, so one noisy pixel moves the maximum by pixels. The centroid and the mirror cost use every pixel and every row.
+\item \textbf{Numerical.} Hint: The mirror of x about c is 2c - x. Solution: Centroid 46/21 = 2.19. Cost 2 at c = 2, 4 at c = 2.5 and 20.5 at c = 1.5; a parabola through them has its lowest point at 2.20. Both finders say about 2.2 pixels.
+\item \textbf{Graph and simulation interpretation.} Hint: How many independent noisy pixels does each inversion use? Solution: One half uses about 40 pixels and both halves 79, with independent noise, so the noise of the answer falls by about the square root of 2 (mean error 0.053 to 0.041). Finding the axis is what makes the second half usable.
+\item \textbf{Design and optimisation challenge.} Hint: Compare the cost of a wrong axis with the noise floor, about 0.041. Solution: Assuming the middle gives 0.048, 0.065 and 0.110 for 0.5, 1 and 2 pixels; mirror axis with both halves 0.041, 0.041 and 0.044; true axis with both halves 0.042, 0.041 and 0.043. The search costs nothing measurable. Skip it only if the camera is aligned within about 0.25 pixel, and then you also give up the second half.
 \end{enumerate}
 
 \section{How to join}

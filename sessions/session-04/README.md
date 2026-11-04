@@ -179,4 +179,4 @@ Score yourself with [RUBRIC.md](../../RUBRIC.md). Print the [activity sheet](act
 1. Do the three coding tasks in [exercises.md](exercises.md).
 2. Run `python start.py 4` again after your changes. It ends with the checkpoint; when it prints `PASS`, you are done. (Checkpoint only: `python start.py check 4`.)
 
-Next: the [roadmap](../../promo/roadmap.md). Session 5 is yours to build.
+Next: [Session 5: Where is the axis? Finding the flame's symmetry axis from the photo](../session-05/README.md).

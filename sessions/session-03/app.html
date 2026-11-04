@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Session 3: noise and smoothing in the inversion</title>
 <style>
-  :root { --bg:#ffffff; --fg:#14181f; --muted:#5b6472; --card:#f3f5f8; --accent:#1f6feb; --good:#1a7f37; --bad:#b42318; --line:#d7dce3; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#0e1116; --fg:#e6e9ee; --muted:#9aa3b2; --card:#171b22; --accent:#58a6ff; --good:#3fb950; --bad:#f97066; --line:#2a313c; } }
+  :root { --bg:#ffffff; --fg:#14181f; --muted:#5b6472; --card:#f3f5f8; --accent:#003f7f; --good:#c86a00; --bad:#d81b60; --line:#d7dce3; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1116; --fg:#e6e9ee; --muted:#9aa3b2; --card:#171b22; --accent:#3b8fe0; --good:#ffc857; --bad:#e0457b; --line:#2a313c; } }
   * { box-sizing: border-box; }
   body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:16px/1.5 system-ui, sans-serif; }
   main { max-width: 780px; margin: 0 auto; }
@@ -196,7 +196,7 @@ if (graph === "profile") {
   curve(f(1), A, C.bad, -5, 1.5, 27);
   curve(f(2), A, C.fg, -5, 1.5, 27);
   dot(A, p.loglam, 100 * tot[2], C.accent, "now");
-  ctx.font = "12px system-ui"; ctx.textAlign = "left"; ctx.fillStyle = C.good; ctx.fillText("green: bias", A.L + 10, A.T + 16);
+  ctx.font = "12px system-ui"; ctx.textAlign = "left"; ctx.fillStyle = C.good; ctx.fillText("orange: bias", A.L + 10, A.T + 16);
   ctx.fillStyle = C.bad; ctx.fillText("red: noise", A.L + 10, A.T + 32); ctx.fillStyle = C.fg; ctx.fillText("black: total", A.L + 10, A.T + 48);
 }
 readout("lam = " + Math.pow(10, p.loglam).toPrecision(2) + " &nbsp; bias " + (100 * tot[0]).toFixed(2) + " % &nbsp; noise " + (100 * tot[1]).toFixed(2) + " % &nbsp; total " + (100 * tot[2]).toFixed(2) + " % of the peak emission &nbsp; (noise gain at the axis ring " + m.gn[0].toFixed(1) + " per mm)");

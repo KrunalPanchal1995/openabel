@@ -26,6 +26,21 @@ def run_checks(L):
     xs, img = L.photo(3.0)
     checks.append(("the photo is round: pixel on the x axis equals pixel on the y axis at the same distance",
                    abs(img[80, 120] - img[120, 80]) < 1e-9))
+    # second shape: the glowing cylinder (issue: second shape in the Session 1 app)
+    cyl = L.uniform_cylinder(3.0, 5.0)
+    checks.append(("cylinder: flat along the axis, I = 2 R eps0 = 6 for |y| <= length / 2",
+                   all(abs(float(L.cylinder_profile(v, 3.0, 5.0)) - 6.0) < 1e-12 for v in (0.0, 1.0, 2.4))))
+    checks.append(("cylinder: dark beyond its ends, I = 0 at y = 2.6 cm", float(L.cylinder_profile(2.6, 3.0, 5.0)) == 0.0))
+    checks.append(("cylinder: ray sums agree with the formula at the centre line (y = 0, 1, 2, x = 0)",
+                   all(abs(L.ray_sum_3d(cyl, 0.0, v) - float(L.cylinder_profile(v, 3.0, 5.0))) < 0.01 for v in (0.0, 1.0, 2.0))))
+    checks.append(("cylinder: ray sum is 0 outside the length (y = 3 cm)", abs(L.ray_sum_3d(cyl, 0.0, 3.0)) < 1e-12))
+    checks.append(("cylinder: across the axis it is round, ray sum at x = 1.8 cm is 4.8 like the ball",
+                   abs(L.ray_sum_3d(cyl, 1.8, 0.0) - 4.8) < 0.01 and abs(float(L.cylinder_profile(0.0, 3.0, 5.0, x=1.8)) - 4.8) < 1e-9))
+    hol = L.uniform_cylinder(3.0, 5.0, 1.0, 2.0)
+    checks.append(("hollow cylinder: centre-line brightness is 2 (R - r_in) = 2, formula and ray sum",
+                   abs(float(L.cylinder_profile(1.0, 3.0, 5.0, 1.0, 2.0)) - 2.0) < 1e-12 and abs(L.ray_sum_3d(hol, 0.0, 1.0) - 2.0) < 0.01))
+    checks.append(("the ball is not flat but the cylinder is: ball I(2.4) = 3.6 < cylinder 6.0",
+                   abs(float(L.ball_profile(2.4, 3.0)) - 3.6) < 1e-9 and float(L.cylinder_profile(2.4, 3.0, 5.0)) > float(L.ball_profile(2.4, 3.0))))
     return checks
 
 

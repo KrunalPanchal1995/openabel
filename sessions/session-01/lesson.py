@@ -75,6 +75,38 @@ def uniform_ball(R, eps0=1.0, r_in=0.0):
 
 
 # %% [markdown]
+# ## Optional: a second shape, a glowing cylinder seen from the side
+# Stand a glowing cylinder (a candle flame, a tube light) upright: radius `R`, length `length`,
+# axis along y. A line of sight at height y and sideways offset x from the axis travels a
+# chord of length 2 sqrt(R^2 - x^2) through the cylinder, but only if |y| <= length / 2. So
+# along the axis the brightness is *flat* (the chord does not change with y) and drops to zero
+# at the ends, while across the cylinder (changing x) it is round, just like the ball:
+#
+#     I(x, y) = eps0 * ( chord(x, R) - chord(x, r_in) )   if |y| <= length / 2, else 0
+
+# %%
+def cylinder_profile(y, R, length, eps0=1.0, r_in=0.0, x=0.0):
+    """Brightness (a.u.) of an upright glowing cylinder at height y and sideways offset x from its axis."""
+    path = chord_length(x, R) - chord_length(x, r_in)
+    return np.where(np.abs(np.asarray(y, dtype=float)) <= length / 2, eps0 * path, 0.0)
+
+
+def ray_sum_3d(emission, x, y, half_length=6.0, n=6001):
+    """Add up emission(X, Y, Z) * ds along the line of sight (the z direction) at the pixel (x, y)."""
+    z = np.linspace(-half_length, half_length, n)
+    ds = z[1] - z[0]
+    return float(np.sum(emission(x + 0.0 * z, y + 0.0 * z, z)) * ds)
+
+
+def uniform_cylinder(R, length, eps0=1.0, r_in=0.0):
+    """Emission as a function of the position (X, Y, Z); the cylinder axis is the Y axis."""
+    def emission(X, Y, Z):
+        r = np.hypot(X, Z)
+        return np.where((r <= R) & (r >= r_in) & (np.abs(Y) <= length / 2), eps0, 0.0)
+    return emission
+
+
+# %% [markdown]
 # ## Step 4: a picture of the ball
 # The 2D "photo" of a round object: the pixel at (x, y) sees the same profile as the pixel at
 # distance sqrt(x^2 + y^2) from the middle, because the ball is round in every direction.
@@ -134,6 +166,30 @@ if __name__ == "__main__":
     ax2.set_title("Lines of sight and their chords (red)")
     fig2.tight_layout()
     fig2.savefig(OUT / "chords.png", dpi=110)
+
+    # figure 3: a second shape, the cylinder
+    fig3, ax3 = plt.subplots(1, 2, figsize=(9, 3.8))
+    yy = np.linspace(-4, 4, 801)
+    ax3[0].plot(yy, ball_profile(yy, 3.0), color="#003f7f", lw=2, label="ball (R = 3 cm)")
+    ax3[0].plot(yy, cylinder_profile(yy, 3.0, 5.0), color="#c86a00", lw=2, label="cylinder (R = 3 cm, length 5 cm)")
+    ys = np.array([-3.5, -2.0, -1.0, 0.0, 1.0, 2.0, 3.5])
+    ax3[0].plot(ys, [ray_sum_3d(uniform_cylinder(3.0, 5.0), 0.0, v) for v in ys], "ko", ms=4, label="ray sum (cylinder)")
+    ax3[0].set_xlabel("height y of the line of sight (cm)")
+    ax3[0].set_ylabel("brightness I (a.u.)")
+    ax3[0].set_title("Along the axis: the cylinder is flat")
+    ax3[0].grid(alpha=0.3)
+    ax3[0].legend(fontsize=7)
+    xx = np.linspace(-3.5, 3.5, 701)
+    ax3[1].plot(xx, cylinder_profile(0.0, 3.0, 5.0, x=xx), color="#c86a00", lw=2, label="formula, y = 0")
+    xs2 = np.linspace(-2.9, 2.9, 13)
+    ax3[1].plot(xs2, [ray_sum_3d(uniform_cylinder(3.0, 5.0), v, 0.0) for v in xs2], "ko", ms=4, label="ray sum")
+    ax3[1].set_xlabel("sideways offset x from the axis (cm)")
+    ax3[1].set_ylabel("brightness I (a.u.)")
+    ax3[1].set_title("Across the axis: round, like the ball")
+    ax3[1].grid(alpha=0.3)
+    ax3[1].legend(fontsize=8)
+    fig3.tight_layout()
+    fig3.savefig(OUT / "cylinder.png", dpi=110)
 
 # %% [markdown]
 # ## Try it

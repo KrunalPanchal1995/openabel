@@ -55,8 +55,14 @@ The first figure shows the camera photo of a solid ball (brightest in the middle
 
 *Four lines of sight through a ball and their chord lengths (red).*
 
+**A second shape.** A glowing cylinder standing upright (a tube light, a candle flame) is the same rule with a different path. A line of sight at height y and sideways offset x from the axis crosses a chord 2 sqrt(R^2 - x^2) if |y| is within half the length, and nothing otherwise. Along the axis the picture is flat (6 a.u. for R = 3 cm, eps0 = 1 a.u. per cm, for |y| up to 2.5 cm on a 5 cm cylinder) while across the axis it is round like the ball; the dots are brute-force sums from `ray_sum_3d` in `lesson.py`. The ball and the cylinder have the same highest brightness, 6 a.u., yet at y = 2.4 cm the ball gives 3.6 a.u. and the cylinder 6.0 a.u.: the pixel records a line integral, not the shape.
+
+![Ball and cylinder profiles along the height, and the cylinder's profile across its width (dots: brute-force ray sums).](../../docs/figures/s01_cylinder.png)
+
+*Ball and cylinder profiles along the height, and the cylinder's profile across its width (dots: brute-force ray sums).*
+
 ## D. Interactive simulation
-Run the lesson (`python start.py 1`), then open the live app: [Session 1: a glowing ball seen from the side](https://krunalpanchal1995.github.io/openabel/session-01/) (or `app.html` in this folder). Move the line-of-sight slider and watch the red chord and the brightness dot on the profile; then raise the hollow percentage and see the dark centre appear.
+Run the lesson (`python start.py 1`), then open the live app: [Session 1: a glowing ball seen from the side](https://krunalpanchal1995.github.io/openabel/session-01/) (or `app.html` in this folder). Move the line-of-sight slider and watch the red chord and the brightness dot on the profile; then raise the hollow percentage and see the dark centre appear. Then press the **Cylinder** button: the same pixel rule gives a profile that is flat along the cylinder's axis and drops to zero at its ends (set the length with the length slider).
 
 **Challenge.** Make the brightness at the centre of the profile at most half of the brightest point (use the hollow slider).
 
